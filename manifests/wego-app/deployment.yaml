@@ -12,8 +12,8 @@ spec:
       serviceAccountName: wego-app-service-account
       containers:
         - name: wego-app
-          image: ghcr.io/weaveworks/wego-app:{{.Version}}
-          args: ["ui","run"]
+          image: ghcr.io/weaveworks/wego-app:latest
+          args: ["ui", "run"]
           ports:
             - containerPort: 9001
           imagePullPolicy: IfNotPresent

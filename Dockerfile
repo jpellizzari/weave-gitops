@@ -15,9 +15,10 @@ FROM golang:1.16 AS go-build
 COPY . /app
 COPY --from=ui /home/app/cmd/gitops/ui/run/dist/ /app/cmd/gitops/ui/run/dist/
 WORKDIR /app
-RUN make dependencies && make bin
+RUN go mod download
+RUN make bin
 
 # Distroless
-FROM gcr.io/distroless/base
+FROM gcr.io/distroless/base as runtime
 COPY --from=go-build /app/bin/gitops /gitops
 ENTRYPOINT ["/gitops"]
