@@ -379,7 +379,7 @@ func (s *applicationServer) ListCommits(ctx context.Context, msg *pb.ListCommits
 		Token:     providerToken.AccessToken,
 	})
 	if appErr != nil {
-		return nil, fmt.Errorf("failed to create app service: %w", appErr)
+		return nil, grpcStatus.Errorf(codes.Unauthenticated, "failed to create app service: %s", appErr.Error())
 	}
 
 	commits, err := appService.GetCommits(params, application)

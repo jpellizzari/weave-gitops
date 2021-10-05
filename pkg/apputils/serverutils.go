@@ -43,9 +43,12 @@ func (f factory) GetAppService(ctx context.Context, params AppServiceParams) (ap
 		return nil, fmt.Errorf("error creating normalized url for app url: %w", err)
 	}
 
-	configURL, err := gitproviders.NewNormalizedRepoURL(params.ConfigURL)
-	if err != nil {
-		return nil, fmt.Errorf("error creating normalized url for config url: %w", err)
+	configURL := appURL
+	if params.ConfigURL != "" {
+		configURL, err = gitproviders.NewNormalizedRepoURL(params.ConfigURL)
+		if err != nil {
+			return nil, fmt.Errorf("error creating normalized url for config url: %w", err)
+		}
 	}
 
 	provider, err := gitproviders.New(gitproviders.Config{Provider: configURL.Provider(), Token: params.Token})
