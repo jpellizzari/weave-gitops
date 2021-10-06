@@ -34,7 +34,6 @@ import (
 	"github.com/weaveworks/weave-gitops/pkg/middleware"
 	fakelogr "github.com/weaveworks/weave-gitops/pkg/vendorfakes/logr"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -551,7 +550,7 @@ var _ = Describe("ApplicationsServer", func() {
 
 			gp.CreatePullRequestToUserRepoReturns(testutils.DummyPullRequest{}, nil)
 
-			res, err := appsClient.AddApplication(contextWithAuth(ctx), appRequest)
+			res, err := appsClient.AddApplication(middleware.ContextWithGRPCAuth(ctx, "mytoken"), appRequest)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(res.Success).To(BeTrue())
 
@@ -576,7 +575,7 @@ var _ = Describe("ApplicationsServer", func() {
 				return testutils.DummyPullRequest{}, nil
 			}
 
-			res, err := appsClient.AddApplication(contextWithAuth(ctx), appRequest)
+			res, err := appsClient.AddApplication(middleware.ContextWithGRPCAuth(ctx, "mytoken"), appRequest)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(res.Success).To(BeTrue())
 
@@ -602,7 +601,7 @@ var _ = Describe("ApplicationsServer", func() {
 				return testutils.DummyPullRequest{}, nil
 			}
 
-			res, err := appsClient.AddApplication(contextWithAuth(ctx), appRequest)
+			res, err := appsClient.AddApplication(middleware.ContextWithGRPCAuth(ctx, "mytoken"), appRequest)
 			Expect(err).NotTo((HaveOccurred()))
 			Expect(res.Success).To(BeTrue())
 
@@ -636,7 +635,7 @@ var _ = Describe("ApplicationsServer", func() {
 			gp.GetCommitsFromOrgRepoReturns(commits, nil)
 			gp.GetAccountTypeReturns(gitproviders.AccountTypeUser, nil)
 
-			res, err := appsClient.ListCommits(contextWithAuth(context.Background()), &pb.ListCommitsRequest{
+			res, err := appsClient.ListCommits(middleware.ContextWithGRPCAuth(context.Background(), "mytoken"), &pb.ListCommitsRequest{
 				Name:      testApp.Name,
 				Namespace: testApp.Namespace,
 			})
@@ -886,11 +885,4 @@ func formatLogVals(vals []interface{}) []string {
 	}
 
 	return list
-}
-
-func contextWithAuth(ctx context.Context) context.Context {
-	md := metadata.New(map[string]string{middleware.GRPCAuthMetadataKey: "mytoken"})
-	ctx = metadata.NewOutgoingContext(ctx, md)
-
-	return ctx
 }

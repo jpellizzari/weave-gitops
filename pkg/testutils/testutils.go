@@ -2,6 +2,7 @@ package testutils
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/go-logr/logr"
 	"github.com/weaveworks/weave-gitops/pkg/kube"
@@ -15,7 +16,6 @@ import (
 
 	"github.com/fluxcd/go-git-providers/gitprovider"
 	kustomizev1 "github.com/fluxcd/kustomize-controller/api/v1beta1"
-	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/discovery"
@@ -71,7 +71,9 @@ func StartK8sTestEnvironment() (*K8sTestEnv, error) {
 
 	go func() {
 		err := k8sManager.Start(ctrl.SetupSignalHandler())
-		Expect(err).ToNot(HaveOccurred())
+		if err != nil {
+			log.Fatal(err.Error())
+		}
 	}()
 
 	dc, err := discovery.NewDiscoveryClientForConfig(cfg)
@@ -92,7 +94,9 @@ func StartK8sTestEnvironment() (*K8sTestEnv, error) {
 		RestMapper: mapper,
 		Stop: func() {
 			err := testEnv.Stop()
-			Expect(err).NotTo(HaveOccurred())
+			if err != nil {
+				log.Fatal(err.Error())
+			}
 		},
 	}
 
