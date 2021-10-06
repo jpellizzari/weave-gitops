@@ -4,6 +4,7 @@ package tools
 
 import (
 	_ "github.com/deepmap/oapi-codegen/cmd/oapi-codegen"
+	_ "github.com/freshautomations/stoml"
 	_ "github.com/grpc-ecosystem/protoc-gen-grpc-gateway-ts"
 	_ "github.com/jandelgado/gcov2lcov"
 	_ "github.com/maxbrunsfeld/counterfeiter/v6"
